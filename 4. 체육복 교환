@@ -1,3 +1,13 @@
+/*
+ * 제목 : 십자 찾기
+ * 문제 : 체육복을 서로 교환하는 이벤트를 개최했다.
+ *        각자 보유중인 체육복을 가지고 입장(Entry) 또는 퇴장(Exit) 한다 (체육복은 브랜드명이다) 
+ *        구매(Buy) 가 성사되면 체육복이 판매자에서 구매자로 옮겨진다.
+ * 종류 : Hash 응용
+ */
+
+
+
 #include <iostream>
 #include <string>
 #include <unordered_map>
