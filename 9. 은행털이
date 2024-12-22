@@ -1,0 +1,69 @@
+#include <iostream>
+#include <vector>
+#define PRINT(...) //printf(__VA_ARGS__)
+using namespace std;
+using PII = pair<int, int>;
+
+int bank[10] = { 10,50,30,20,50,10,80,60,10,30 };   // money
+vector<int> road[10];
+
+void buildRoad(int from, int to) {
+	road[from].push_back(to);
+	road[to].push_back(from);
+}
+
+int vCnt = 0;
+int visit[10];
+int gMoney;
+void dfs(int pos, int sum) {
+	PRINT("[dfs] %d %d\n", pos, sum);
+	for (int i : road[pos]) {
+		if (visit[i] == vCnt) {
+			continue;
+		}
+		visit[i] = vCnt;
+		dfs(i, sum + bank[i]);
+		visit[i]--;		// 다시 되돌아왔으므로 방문처리 취소
+	}
+	if (sum > gMoney)
+		gMoney = sum;
+}
+
+int getStealMoney(int posThief) {
+	vCnt++;
+	gMoney = bank[posThief];
+	visit[posThief] = vCnt;
+	dfs(posThief, gMoney);
+	return gMoney;
+}
+void ans(int pos) {
+	printf("%d : %d\n", pos, getStealMoney(pos));
+}
+int main() {
+	for (int i = 0; i < 10; i++)
+		road[i].clear();
+
+	buildRoad(0, 1);
+	buildRoad(1, 2);
+	buildRoad(1, 9);
+	buildRoad(2, 3);
+	buildRoad(2, 4);
+	buildRoad(3, 5);
+	buildRoad(3, 6);
+	buildRoad(3, 7);
+	buildRoad(7, 8);
+	
+	for (int i = 0; i < 10; i++) {
+		PRINT("road[%d] : ",i );
+		for (int idx : road[i])
+			PRINT("%d ", idx);
+		PRINT("\n");
+	}
+
+	ans(3);
+	ans(4);
+	ans(8);
+	ans(9);
+	ans(2);
+	ans(6);
+}
