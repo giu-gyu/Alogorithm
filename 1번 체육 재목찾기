@@ -1,0 +1,79 @@
+/*
+ * 제목 : 체육 재목 찾기
+ * 문제 : 20 명의 사람에게 키 (100 ~ 250) 와 체육 점수 (0~100) 가 주어진다.
+ *        키가 180 이상인 사람중 체육 점수가 가장 높은 사람를 찾아라
+ * 종류 : binary search 응용
+ */
+
+#include <stdio.h>
+#define NUM_STUDENT 20
+#define DEBUG(...) printf(__VA_ARGS__)
+
+int gID = 0;
+struct S {
+	int id;
+	int height;
+	int score;
+	S* next;
+	void create(int _h, int _s) {
+		id = gID++;
+		height = _h;
+		score = _s;
+	}
+} s[NUM_STUDENT];
+
+int main() {
+	int ID = 0;
+	int input[NUM_STUDENT][2] = {
+		{229,	31},
+		{214,	44},
+		{163,	67},
+		{146,	45},
+		{247,	15},
+		{198,	84},	//
+		{113,	2},
+		{122,	80},
+		{141,	39},
+		{233,	54},
+		{228,	75},
+		{171,	30},
+		{174,	71},
+		{107,	91},
+		{237,	50},
+		{188,	11},
+		{154,	37},
+		{101,	9},
+		{186,	37},
+		{111,	66},
+	};
+
+	struct S* gPtr = NULL;
+	for (ID = 0; ID < NUM_STUDENT; ID++) {
+		auto oldHead = gPtr;
+		s[ID].create(input[ID][0], input[ID][1]);
+		s[ID].next = gPtr;
+		gPtr = &s[ID];
+	}
+
+	int l = 0, r = 100, m = 50;
+	S* temp;
+	for (; l <= r; m = (l + r) >> 1) {
+		bool isFind = false;
+		temp = gPtr;
+
+		DEBUG("%d ~ %d ~ %d\n", l, m, r);
+		for (; temp != 0; temp = temp->next) {
+			if (temp->score >= m && temp->height >= 180) {
+				isFind = true;
+				DEBUG("isFind:%d height:%d score:%d\n", isFind, temp->height, temp->score);
+			}
+		}
+
+		if (isFind == true)
+			l = m + 1;
+		else
+			r = m - 1;
+	}
+
+	printf("[Answer] score : %d\n", m);
+}
