@@ -1,0 +1,95 @@
+#include <algorithm>
+#include <vector>
+#include <queue>
+#include <set>
+#include <iostream>
+using namespace std;
+using PII = pair<int, int>;
+struct Ride {
+    int id;
+    int capa;
+    bool operator < (const Ride& b) const {
+        if (capa != b.capa) return capa < b.capa;
+        return id < b.id;
+    }
+};
+
+struct cmp {
+    bool operator () (const PII& a, const PII& b) const{
+        if (a.first != b.first) return a.first < b.first;
+        return a.second < b.second;
+    }
+};
+struct Ride ride[10] = { {4,3},{6,5}, {6,3}, {6,7}, {2,7},{8,2}, {5,5} };
+struct cmp_int {
+    bool operator () (const int& a, const int& b) const {
+        return ride[a] < ride[b];
+    }
+};
+
+int temp[10] = { 1,2,3,4,5,6,7,8,9,10 };
+int main() {
+    priority_queue <Ride> PQ = {};
+    PQ.push({ 4,6 });
+    PQ.push({ 7,5 });
+    PQ.push({ 5,5 });
+    PQ.push({ 3,5 });
+    PQ.push({ 8,1 });
+    PQ.push({ 4,1 });
+    while (!PQ.empty()) {
+        Ride r = PQ.top(); PQ.pop();
+        printf("(%d %d) ", r.id, r.capa);
+    }
+    printf("\n");
+    printf("\n");
+
+    set<Ride> S = {};
+    S.insert({ 4,6 });
+    S.insert({ 7,5 });
+    S.insert({ 5,5 });
+    S.insert({ 3,5 });
+    S.insert({ 8,1 });
+    S.insert({ 4,1 });
+    for (Ride r : S) {
+        printf("(%d %d) ", r.id, r.capa);
+    }
+    printf("\n");
+    printf("\n");
+
+    vector <Ride> V_ride = {};
+    V_ride.push_back({ 4,6 });
+    V_ride.push_back({ 7,5 });
+    V_ride.push_back({ 5,5 });
+    V_ride.push_back({ 3,5 });
+    V_ride.push_back({ 8,1 });
+    V_ride.push_back({ 4,1 });
+
+    sort(V_ride.begin(), V_ride.end());
+
+    for (Ride r : V_ride) {
+        printf("(%d %d) ", r.id, r.capa);
+    }
+    printf("\n");
+
+    vector <int> V_ride2 = {};
+    V_ride2.push_back(5);
+    V_ride2.push_back(4);
+    V_ride2.push_back(2);
+    V_ride2.push_back(1);
+    V_ride2.push_back(3);
+    V_ride2.push_back(6);
+    sort(V_ride2.begin(), V_ride2.begin()+6, cmp_int());
+    for (int r : V_ride2) {
+        printf("(%d {%d %d}) ", r, ride[r].id, ride[r].capa);
+    }
+    printf("\n");
+    printf("\n");
+
+    vector<PII> vec = { {5,5}, {5,2}, {5,9}, {1,2}, {4,2}, {6,6} };
+    sort(vec.begin(), vec.end(), cmp());
+    for (PII n : vec) {
+        std::cout <<"(" << n.first << " " << n.second << ") ";
+    }
+
+    return 0;
+}
