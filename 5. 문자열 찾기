@@ -1,0 +1,36 @@
+#include <iostream>
+#include <stdio.h>
+#include <string>
+#include <unordered_map>
+using namespace std;
+string str = "silencemmiteobjectstonestraintversehorseminecessaryield";
+unordered_map<string, int> H;	// key, cnt
+
+void PRINT(string s) {
+	// c_str() 안쓰면 출력안됨. c_str() 안쓸려면 cout 으로 출력해야함
+	printf("%s : %d\n", s.c_str(), H[s]);
+}
+
+int main() {
+	H.clear();
+	//printf("str:%s\n", str.c_str());
+	for (int i = 0; i < str.size(); i++) {
+		for (int j = 0; j < 5; j++) {
+			if ((i + j) > str.size() + 1)
+				break;
+
+			char temp[70];
+			strcpy_s(temp, &str.c_str()[i]);
+			
+			temp[j+1] = '\0';
+			//printf("[%d][%d] temp:%s\n", i, j, temp);
+			H[temp]++;
+		}
+	}
+
+	PRINT("s");
+	PRINT("stone");
+	PRINT("wlkend");
+	PRINT("mi");
+	return 0;
+}
