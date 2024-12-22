@@ -1,0 +1,15 @@
+1. memcpy 사용시 (memcpy() 가 무조건 빠르지않음. 그냥 대입하는게 빠를수도)
+
+int info[6];
+memcpy(buf, info, 6); // Wrong
+memcpy(buf, info, sizeof(int) * 6); // Answer
+
+2. int -> register int 로 수정
+
+3. for 문이나 cmp 함수에서 & 를 붙여서 무조건 reference 로 해야 빠름. 평소에도 & 사용하는게 유리
+
+for (Student& s : Vector) {
+bool operator () (const Student& a, const Student& b) const {
+
+4. vector 를 순회할때는 begin 부터 size 만큼 순회하는게 빠름
+즉, for ( : ) 보다 for ( ; ; ) 가 빠름
