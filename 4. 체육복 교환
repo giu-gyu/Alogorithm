@@ -1,0 +1,139 @@
+#include <iostream>
+#include <string>
+#include <unordered_map>
+using namespace std;
+
+int cntName;
+unordered_map<string, int> nameId;
+unordered_map<string, vector<string>> brandName;
+struct Person {
+	int id;
+	int numProduct;
+}person[10];
+int entry(string s, string b[5]) {
+	nameId[s] = cntName;
+	int i = 0;
+	for (; i < 5; i++) {
+		if (b[i][0] == '\0')
+			break;
+		brandName[b[i]].push_back(s);
+	}
+	person[cntName].id = cntName;
+	person[cntName].numProduct = i;
+	printf("[entry] id:%d numProdcut:%d\n", cntName, i);
+	return cntName++;
+}
+int exit(string name) {
+	// '&' 를 붙여서 p 를 reference 로 받고도록 해야 erase() 가 적용됨. & 안붙이면 erase 안됨.
+	// 이렇게하면 compile 에러 발생.
+	// for (pair<string, vector<string>> &p : brandName) {
+	for (auto& p : brandName) {
+		int pos = -1;
+		for (int i = 0; i < p.second.size(); ++i) {
+			if (p.second[i] == name) { // if (strcmp(p.second[i].c_str(), name.c_str()) == 0) 와 동일
+				pos = i;
+				break;
+			}
+		}
+		
+		if (pos != -1)
+			p.second.erase(p.second.begin() + pos);
+	}
+	printf("[exit] id:%d numProduct:%d\n", person[nameId[name]].id, person[nameId[name]].numProduct);
+	
+	int ret = person[nameId[name]].numProduct;
+	nameId.erase(name);
+	// namdId[name] 은 방금 삭제되었는데 만약 다음 라인을 추가한다면 nameId[name] 이 다시 재등록됨.
+	//person[nameId[name]].id = -1;
+
+	return ret;
+}
+void buy(string from, string to, string product) {
+	int i = 0;
+	printf("[buy] from:%s to:%s product:%s \n", from.c_str(), to.c_str(), product.c_str());
+	for (string s : brandName[product]) {
+		if (strcmp(s.c_str(), from.c_str()) == 0) {
+			break;
+		} else 
+			i++;
+	}
+	brandName[product].erase(brandName[product].begin() + i);
+	person[nameId[from]].numProduct--;
+	brandName[product].push_back(to);
+	person[nameId[to]].numProduct++;
+}
+void PRINT() {
+	for (pair<string, int> p : nameId) {
+		printf("  name:%s id:%d\n", p.first.c_str(), p.second);
+	}
+	for (pair<string, vector<string>> p : brandName) {
+		printf("  brand:%s, name:", p.first.c_str());
+		for (string s : p.second) {
+			printf("%s, ", s.c_str());
+		}
+		printf("\n");
+	}
+}
+int main() {
+	string brand[5];
+	nameId.clear();
+	brandName.clear();
+
+	brand[0] = "NIKE";
+	brand[1] = "UNDERARMOUR";
+	brand[2] = "NEWBALANCE";
+	brand[3] = "ADIDAS";
+	brand[4] = "";
+	entry("ALEX", brand);
+
+	brand[0] = "NEWBALANCE";
+	brand[1] = "PUMA";
+	brand[2] = "FILA";
+	brand[3] = "ADIDAS";
+	brand[4] = "";
+	entry("TOM", brand);
+
+	brand[0] = "NEWBALANCE";
+	brand[1] = "NIKE";
+	brand[2] = "";
+	brand[3] = "";
+	brand[4] = "";
+	entry("JENNY", brand);
+
+	brand[0] = "REEBOK";
+	brand[1] = "ADIDAS";
+	brand[2] = "";
+	brand[3] = "";
+	brand[4] = "";
+	entry("SUMI", brand);
+
+	brand[0] = "NIKE";
+	brand[1] = "ADIDAS";
+	brand[2] = "NEWBALANCE";
+	brand[3] = "UNDERARMOUR";
+	brand[4] = "LULULEMON";
+	entry("KUMAR", brand);
+
+	brand[0] = "COLUMBIA";
+	brand[1] = "PUMA";
+	brand[2] = "NEWBALANCE";
+	brand[3] = "UNDERARMOUR";
+	brand[4] = "";
+	entry("JASON", brand);
+
+	PRINT();
+
+	buy("KUMAR", "JASON", "LULULEMON");
+	buy("SUMI", "KUMAR", "REEBOK");
+	buy("ALEX", "JENNY", "UNDERARMOUR");
+
+	PRINT();
+
+	exit("JENNY");
+	exit("KUMAR");
+	exit("JASON");
+
+	PRINT();
+
+	return 0;
+}
