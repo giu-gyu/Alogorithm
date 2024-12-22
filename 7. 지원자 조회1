@@ -1,0 +1,154 @@
+#include <iostream>
+#include <string>
+#include <set>
+#include <unordered_map>
+using namespace std;
+
+#define PRINT1(...) //printf(__VA_ARGS__)
+#define PRINT2(...) //printf(__VA_ARGS__)
+#define PRINT3(...) printf(__VA_ARGS__)
+
+int gCnt;
+struct Person {
+	int id;
+	string company;
+	vector<string> tool;
+}person[100];
+struct cmp {
+	bool operator() (const Person a, const Person b) const {
+		return a.id < b.id;
+	}
+};
+set<Person, cmp> S;
+unordered_map<string, vector<int>> Hcompany;
+unordered_map<string, vector<int>> Htool;
+
+void add(string ch) {
+	gCnt++;
+	person[gCnt].tool.clear();
+	//PRINT1("ch : %s\n", ch.c_str());
+
+	string str = ch;
+	string id, company, tool;
+	int iId;
+	int start;
+	int step = 0;
+	int i;
+	for (i = 0; ch[i] != '\0'; i++) {
+		if (ch[i] == ':') {
+			start = i + 1;
+		}
+		if (ch[i] == ',' || ch[i] == '\0') {
+			switch (step) {
+			case 0:
+				id.assign(str.begin() + start, str.begin() + i);
+				iId = stoi(id);
+				break;
+			case 1:
+				company.assign(str.begin() + start, str.begin() + i);
+				break;
+			}
+			step++;
+		}
+	}
+	tool.assign(str.begin() + start, str.begin() + i);
+
+	person[gCnt].id = iId;
+	person[gCnt].company = company;
+	start = 0;
+	string subTool[5];
+	int subIndex = 0;
+	for (int i = 0; i < (signed)tool.size() + 1; i++) {
+		if (tool[i] == '/' || tool[i] == '\0') {
+			subTool[subIndex].assign(tool.begin() + start, tool.begin() + i);
+			start = i + 1;
+			person[gCnt].tool.push_back(subTool[subIndex]);
+			subIndex++;
+		}
+	}
+	S.insert(person[gCnt]);
+}
+int prevSize = 0;
+void updateHash() {
+	int curSize = S.size();
+	for (auto it = next(S.begin(), prevSize); it != S.end(); ++it) {
+		PRINT3("id:%d, company:%s, tool:", it->id, it->company.c_str());
+		Hcompany[it->company].push_back(it->id);
+		PRINT2("Hcompany[%s].push(%d)\n", it->company.c_str(), it->id);
+		for (string s : it->tool) {
+			PRINT3("%s/", s.c_str());
+			Htool[s].push_back(it->id);
+			PRINT2("Htool[%s].push(%d)\n", s.c_str(), it->id);
+		}
+		PRINT3("\n");
+	}
+	prevSize = curSize;
+}
+void getCompany(string s, int k) {
+	if (Hcompany[s].size() < k)
+		printf("getCompany(%s) %d번째 : not founded (%d 개까지 조회 가능합니다.)\n", s.c_str(), k, Hcompany[s].size());
+	else
+		printf("getCompany(%s) %d번째 : %d\n", s.c_str(), k, Hcompany[s].at(k - 1));
+}
+void getTool(string s, int k) {
+	if (Htool[s].size() < k)
+		printf("getTool(%s) %d번째 : not founded (%d 개까지 조회 가능합니다.)\n", s.c_str(), k, Htool[s].size());
+	else
+		printf("getTool(%s) %d번째 : %d\n", s.c_str(), k, Htool[s].at(k - 1));
+}
+int main() {
+	S.clear();
+	Hcompany.clear();
+	Htool.clear();
+
+	add("id:8,company:google,tool:java/rust/c");
+	add("id:5,company:lg,tool:python/c/c++");
+	add("id:3,company:samsung,tool:python/c++");
+	add("id:4,company:google,tool:c/c++/c#/php");
+	add("id:2,company:lg,tool:python/java");
+	add("id:9,company:google,tool:java/rust/c");
+	add("id:7,company:samsung,tool:python/c/c++");
+	add("id:1,company:samsung,tool:python/c++");
+	add("id:6,company:google,tool:c/c++/c#/php");
+	updateHash();
+
+	getCompany("lg", 1);
+	getCompany("lg", 2);
+	getCompany("google", 3);
+	getTool("c++", 1);
+	getTool("c++", 3);
+	getTool("python", 4);
+	getTool("c", 4);
+
+	add("id:15,company:apple,tool:c");
+	add("id:14,company:naver,tool:c");
+	add("id:13,company:lg,tool:python/java");
+	add("id:12,company:apple,tool:java");
+	add("id:16,company:samsung,tool:python/java");
+	add("id:10,company:naver,tool:python");
+	add("id:11,company:kakao,tool:python");
+	add("id:17,company:coopang,tool:c#/php");
+	add("id:18,company:kakao,tool:c/c++");
+	updateHash();
+
+	getCompany("kakao", 1);
+
+	add("id:19,company:naver,tool:c");
+	add("id:26,company:lg,tool:python/java");
+	add("id:21,company:lg,tool:java");
+	add("id:25,company:samsung,tool:python/java");
+	add("id:23,company:naver,tool:python");
+	add("id:24,company:kakao,tool:python");
+	add("id:22,company:coopang,tool:c#/php");
+	add("id:20,company:sk,tool:c/c++");
+	updateHash();
+
+	getCompany("sk", 1);
+	getCompany("samsung", 6);
+	getCompany("naver", 4);
+	getTool("rust", 3);
+	getTool("java", 8);
+	getTool("c#", 4);
+
+	return 0;
+}
