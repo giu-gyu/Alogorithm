@@ -1,3 +1,10 @@
+/*
+ * 제목 : 십자 찾기
+ * 문제 : 7x7좌표에 1~9 의 숫자가 주어진다.
+ *        주어진 숫자가 십자모양으로 채워져있는 좌표를 구하라.
+ * 종류 : Hash 응용
+ */
+
 #include <iostream>
 #include <unordered_map>
 #include <vector>
