@@ -1,0 +1,53 @@
+#include <iostream>
+#define PRINT(...) printf(__VA_ARGS__)
+#define SIZE 20
+int arr[SIZE] = { 5,1,7,9,5,7,2,3,1,6,
+				8,7,5,3,9,6,5,4,2,8 };
+int sorted[SIZE*2];
+
+int sum(int first, int last) {
+	int left = first - 1 + SIZE;
+	int right = last + SIZE;
+	int sum = 0;
+	for (; left < right; left >>= 1, right >>= 1) {
+		//PRINT("left : %d right : %d\n", left, right);
+		if (left & 1) {
+			sum += sorted[left++];
+			//PRINT("sum : %d (left : %d)\n", sum, left-1);
+		}
+		if (right & 1) {
+			sum += sorted[--right];
+			//PRINT("sum : %d (right : %d)\n", sum, right+1);
+		}
+	}
+	return sum;
+}
+void print_sum(int from, int to) {
+	PRINT("%d~%d : %d\n", from, to, sum(from, to));
+}
+void print_all_node() {
+	for (int i = 1; i < SIZE * 2; i++) {
+		if (i == SIZE)
+			printf("\n");
+		printf("%d ", sorted[i]);
+	}
+	printf("\n\n");
+}
+int main() {
+	for (int i = 0; i < SIZE; i++) {
+		sorted[i+SIZE] = arr[i];
+	}
+	for (int i = SIZE - 1; i > 0; i--) {
+		sorted[i] = sorted[i * 2] + sorted[i * 2 + 1];
+	}
+	print_all_node();
+	print_sum(1, 2);
+	print_sum(2, 5);
+	print_sum(1, 10);
+	print_sum(5, 10);	
+	print_sum(3, 7);	
+	print_sum(8, 20);	
+	print_sum(17, 19);
+	
+	return 0;
+}
