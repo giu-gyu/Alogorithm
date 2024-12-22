@@ -1,0 +1,63 @@
+#include <iostream>
+#include <unordered_map>
+#include <vector>
+using namespace std;
+
+using PII = pair<int, int>;
+unordered_map<int, vector<PII>> H;
+
+int map[7][7] = {
+	{1, 4, 8, 5, 7, 2, 1},
+	{1, 2, 5, 5, 5, 6, 3},
+	{2, 2, 2, 5, 6, 6, 6},
+	{3, 2, 2, 2, 5, 6, 2},
+	{5, 1, 2, 2, 2, 9, 2},
+	{1, 1, 1, 2, 9, 9, 9},
+	{8, 1, 5, 4, 2, 9, 3},
+};
+
+int getKey(int up, int left, int right, int down) {
+	return up + (left << 4) + (right << 8) + (down << 12);
+}
+void findCross(int val) {
+	int key = getKey(val, val, val, val);
+	if (H.find(key) == H.end())
+		printf("FindCross : Failed to find (%d)\n", val);
+	else {
+		auto iter = H[key].begin();
+		for (PII p : H[key]) {
+			printf("FindCross (%d, %4X) : %d %d\n", val, key, p.first, p.second);
+		}
+	}
+}
+void findCrossEx(int up, int left, int right, int down) {
+	int key = getKey(up, left, right, down);
+	if (H.find(key) == H.end())
+		printf("FindCrossEx : Failed to find (%d, %d, %d, %d)\n", up, left, right, down);
+	else {
+		auto iter = H[key].begin();
+		for (PII p : H[key]) {
+			printf("FindCrossEx (%d %d %d %d, %4X) : %d %d\n", up, left, right, down, key, p.first, p.second);
+		}
+	}
+}
+
+int main() {
+	H.clear();
+	int y, x;
+	for (y = 1; y < 6; y++) {
+		for (x = 1; x < 6; x++) {
+			int key = getKey(map[y - 1][x], map[y][x - 1], map[y][x + 1], map[y + 1][x]);
+			H[key].push_back({ y,x });
+		}
+	}
+	findCross(5);
+	findCross(2);
+	findCross(6);
+	findCross(4);
+	findCross(1);
+	findCross(9);
+	findCross(8);
+	findCrossEx(4, 4, 9, 2);
+	findCrossEx(8, 4, 9, 1);
+}
