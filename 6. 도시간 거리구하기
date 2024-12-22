@@ -1,0 +1,94 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+using PII = pair<int, int>;
+#define PRINT(...) printf(__VA_ARGS__)
+#define PRINT_ANS(...) printf(__VA_ARGS__)
+
+int gCnt = 0;
+vector <PII> v[11];		// city, distance
+
+template <typename T>
+struct Queue {
+	T val[100];
+	int front, rear;
+	void clear() {
+		front = -1; rear = -1;
+	}
+	void enque(T t) {
+		val[++rear]= t;
+	}
+	T deque() {
+		return val[++front];
+	}
+	int isEmpty() {
+		if (front == rear)
+			return true;
+		else
+			return false;
+	}
+};
+void add(int oldCity, int newCity, int distance) {
+	v[oldCity].push_back({ newCity, distance });
+	v[newCity].push_back({ oldCity, distance });
+}
+int getDistance(int from, int to) {
+	bool visited[50];
+	Queue<PII> Q;
+	Q.clear();
+	Q.enque({ from,0 });	// 첫 도시 (distance 0)
+	PRINT("[en] %d %d\n", from, 0);
+
+	while (!Q.isEmpty()) {
+		PII p = Q.deque();
+		int city = p.first;
+		int distance = p.second;
+		PRINT("[deque] %d %d\n", city, distance);
+		if (visited[city] == true) {
+			PRINT("visited %d\n", city);
+			continue;
+		}
+			
+		if (city == to) {
+			PRINT_ANS("getDistance(%d %d) : %d\n", from, to, distance);
+			return distance;
+		}
+		for (PII next : v[city]) {
+			int nextCity = next.first;
+			int nextDistance = next.second;
+
+			Q.enque({ nextCity, nextDistance + distance});
+			PRINT("[en] %d %d\n", nextCity, nextDistance + distance);
+		}
+		visited[city] = true;
+	}
+	
+	return -1;
+}
+
+int main() {
+	add(1, 2, 50);
+	add(2, 3, 100);
+	add(2, 4, 10);
+	add(2, 5, 30);
+	add(5, 6, 80);
+	add(3, 7, 2);
+	add(3, 8, 6);
+	add(8, 9, 7);
+	add(4, 10, 5);
+
+	//for (int i = 1; i < 11; i++) {
+	//	for (PII p : v[i]) {
+	//		PRINT("%d : %d %d\n", i ,p.first,p.second);
+	//	}
+	//}
+
+	getDistance(1, 6);
+	getDistance(6, 5);
+	getDistance(4, 5);
+	getDistance(1, 9);
+	getDistance(8, 10);
+	getDistance(6, 7);
+	getDistance(7, 8);
+	getDistance(6, 9);
+}
