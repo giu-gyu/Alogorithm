@@ -1,0 +1,122 @@
+/* 함수 인자를 객체 복사에서 객체 참조로 수정하여 속도 개선 */
+
+#define _CRT_SECURE_NO_WARNINGS
+#define USE_SORT_LIBRARY
+
+#include <stdlib.h>	// for strtok()
+#include <string.h>	// for strtok()
+#ifdef USE_SORT_LIBRARY
+#include <algorithm> // for std::sort()
+#endif
+#include <unordered_map>
+#define PRINT(...) printf(__VA_ARGS__)
+
+using namespace std;
+
+struct Person {
+	int idx;
+	char name[10];
+	int score;
+	char major[100];
+#ifdef USE_SORT_LIBRARY
+	bool operator < (const Person& b) const {
+		return score > b.score;
+	}
+#endif
+}person[20] = {
+	{ 0,"Alex", 91, "Computer,Mechanical"},
+	{ 1,"Harry", 85, "Physics,Mathematics"},
+	{ 2,"Pitter", 76, "Economics,Finance,Marketing"},
+	{ 3,"wendy", 75, "Finance,Accounting"},
+	{ 4,"john", 92, "Physics,Chemistry"},
+	{ 5,"Nasson", 75, "Biology,Chemistry"},
+	{ 6,"Richard", 61, "Electrical,Mechanical"},
+	{ 7,"Mark", 77, "Computer,Electrical"},
+	{ 8,"Brook", 88, "History,FInance,Accounting"},
+	{ 9,"Tom", 64, "Physics,Computer,Mathematics"},
+	{ 10,"Usher", 81, "Chemistry,Computer,Physics"},
+	{ 11,"Yon", 66, "Marketing,Economics,Finance"},
+	{ 12,"Eric", 70, "Mechanical,Accounting"},
+};
+struct Person* arr[20];
+
+unordered_map<string, vector<string>> H;
+#ifndef USE_SORT_LIBRARY
+struct Person* sorted[20];
+void sort(Person** p, int size) {
+	if (size <= 1) {
+		return;
+	}
+	//PRINT("p->idx:%d p->score:%d size:%d\n", p->idx, p->score, size);
+	int mid = size >> 1;
+	sort(p, mid);
+	sort(p + mid, size - mid);
+
+	int i = 0;
+	int j = mid;
+	int k = 0;
+	while (i < mid && j < size) {
+		sorted[k++] = p[i]->score < p[j]->score ? p[i++] : p[j++];
+
+	}
+	while (i < mid) {
+		sorted[k++] = p[i++];
+	}
+	while (j < size) {
+		sorted[k++] = p[j++];
+	}
+	for (k = 0; k < size; k++) {
+		p[k] = sorted[k];
+	}
+}
+#endif
+void applyMajor() {
+#ifdef USE_SORT_LIBRARY
+	for (int i = 0; i < 13; i++) {
+		char* pStr = strtok(person[i].major, ",;()");
+		H[pStr].push_back(person[i].name);
+		//PRINT("[push] %s %s\n", pStr, person[i].name);
+		while (pStr = strtok(nullptr, ",;()")) {
+			H[pStr].push_back(person[i].name);
+			//PRINT("[push] %s %s\n", pStr, person[i].name);
+		}
+	}
+#else
+	for (int i = 0; i < 13; i++) {
+		char* pStr = strtok(arr[i]->major, ",;()");
+		H[pStr].push_back(arr[i]->name);
+		//PRINT("[push] %s %s\n", pStr, arr[i]->name);
+		while (pStr = strtok(nullptr, ",;()")) {
+			H[pStr].push_back(arr[i]->name);
+			//PRINT("[push] %s %s\n", pStr, arr[i]->name);
+		}
+	}
+#endif
+}
+void filterMajor(string s) {
+	for (string str : H[s]) {
+		PRINT("major(%s) : name(%s)\n", s.c_str(), str.c_str());
+	}
+}
+int main() {
+	for (int i = 0; i < 13; i++)
+		arr[i] = &person[i];
+#ifdef USE_SORT_LIBRARY
+	std::sort(person, person + 13);
+	for (int i = 0; i < 13; i++)
+		PRINT("%d ", person[i].score);
+	PRINT("\n");
+#else
+	sort(arr, 13);
+	for (int i = 0; i < 13; i++)
+		PRINT("%d ", arr[i]->score);
+	PRINT("\n");
+
+#endif
+
+	applyMajor();
+	filterMajor("Physics");
+	filterMajor("Economics");
+	filterMajor("Computer");
+	return 0;
+}
